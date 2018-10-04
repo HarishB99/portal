@@ -1,0 +1,33 @@
+{
+    "manifestVersion": 1,
+    "id": "harish-release-task-page",
+    "version": "0.0.0.1",
+    "name": "Harish Release Page",
+    "description": "A Visual Studio Services contribution extension for Harish Release Tools.",
+    "publisher": "HarishB",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "categories": [
+        "Build and release"
+    ],
+    "contributions": [
+        {
+            "id": "harish-approval-release-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "buildAndReleaseTask"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "buildAndReleaseTask"
+        }
+    ]
+}
