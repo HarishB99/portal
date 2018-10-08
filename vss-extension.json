@@ -15,19 +15,25 @@
     ],
     "contributions": [
         {
-            "id": "harish-approval-release-task",
-            "type": "ms.vss-distributed-task.task",
+            "id": "harish-approval-release-hub",
+            "type": "ms.vss-web.hub",
             "targets": [
-                "ms.vss-distributed-task.tasks"
+                "ms.vss-build-web.build-release-hub-group"
             ],
             "properties": {
-                "name": "buildAndReleaseTask"
+                "name": "Approvals",
+                "uri": "index.html"
             }
         }
     ],
     "files": [
         {
-            "path": "buildAndReleaseTask"
+            "path": "index.html",
+            "addressable": true
+        },
+        {
+            "path": "node_modules/vss-web-extension-sdk/lib",
+            "addressable": true
         }
     ]
 }

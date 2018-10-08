@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 5%;
+            margin: 0px;
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+    <script>
+        VSS.init();
+        VSS.ready(function() {
+            var webcontext = VSS.getWebContext();
+            console.log(webcontext);
+            document.getElementById("name").innerHTML = webcontext.user.name;
+        });
+    </script>
+</head>
+<body>
+    <h1>Hello, <span id="name"></span></h1>
+</body>
+</html>
