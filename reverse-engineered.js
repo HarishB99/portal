@@ -33,8 +33,8 @@ define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services",
     }
 }), define("scripts/ApprovalsApi", ["require", "exports", "scripts/RestCall"], function(require, exports, rest_call) {
     function c(e, t) {
-        var n = VSS.getWebContext();
-        return t && (t = "/" + t), e = e || "", t = t || "", (-1 !== n.host.authority.toLowerCase().indexOf("dev.azure.com") ? n.account.uri.replace("dev.azure.com", "vsrm.dev.azure.com") : n.account.uri.replace(".visualstudio.com", ".vsrm.visualstudio.com") + "DefaultCollection/") + n.project.id + "/_apis/release/approvals" + t + "?api-version=4.1-preview.1" + e
+        var webcontext = VSS.getWebContext();
+        return t && (t = "/" + t), e = e || "", t = t || "", (-1 !== webcontext.host.authority.toLowerCase().indexOf("dev.azure.com") ? webcontext.account.uri.replace("dev.azure.com", "vsrm.dev.azure.com") : webcontext.account.uri.replace(".visualstudio.com", ".vsrm.visualstudio.com") + "DefaultCollection/") + webcontext.project.id + "/_apis/release/approvals" + t + "?api-version=4.1-preview.1" + e
     }
 
     function p(e) {
