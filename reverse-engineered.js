@@ -6,32 +6,32 @@ var __extends = this.__extends || function(e, t) {
     }
     a.prototype = t.prototype, e.prototype = new a
 };
-define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services", "scripts/RestCall"], function(e, t, l, n) {
-    t.callApi = function(t, a, o, i, r, s) {
-        VSS.getAccessToken().then(function(e) {
-            var n = l.authTokenManager.getAuthorizationHeader(e);
+define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services", "scripts/RestCall"], function(require, exports, vss_auth_service, rest_call) {
+    exports.callApi = function(url, method, headers, data, success_callback, failure_callback) {
+        VSS.getAccessToken().then(function(token) {
+            var authHeader = vss_auth_service.authTokenManager.getAuthorizationHeader(token);
             $.ajax({
-                url: t,
-                method: a,
-                data: i || "",
+                url: url,
+                method: method,
+                data: data || "",
                 success: function(e, t, n) {
-                    r(e, n)
+                    success_callback(e, n)
                 },
                 error: function(e, t, n) {
-                    void 0 !== e.responseJSON || !e.status || 401 !== e.status && 403 !== e.status ? void 0 !== e.responseJSON ? s(e.responseJSON, n, e.status) : s({
+                    void 0 !== e.responseJSON || !e.status || 401 !== e.status && 403 !== e.status ? void 0 !== e.responseJSON ? failure_callback(e.responseJSON, n, e.status) : failure_callback({
                         message: "call failed with status code " + e.status
-                    }, n, e.status) : s({
+                    }, n, e.status) : failure_callback({
                         message: "unauthorized call"
                     }, n)
                 },
                 beforeSend: function(e) {
-                    if (e.setRequestHeader("Authorization", n), o)
-                        for (var t in o) e.setRequestHeader(t, o[t])
+                    if (e.setRequestHeader("Authorization", authHeader), headers)
+                        for (var t in headers) e.setRequestHeader(t, headers[t])
                 }
             })
         })
     }
-}), define("scripts/ApprovalsApi", ["require", "exports", "scripts/RestCall"], function(e, t, u) {
+}), define("scripts/ApprovalsApi", ["require", "exports", "scripts/RestCall"], function(require, exports, rest_call) {
     function c(e, t) {
         var n = VSS.getWebContext();
         return t && (t = "/" + t), e = e || "", t = t || "", (-1 !== n.host.authority.toLowerCase().indexOf("dev.azure.com") ? n.account.uri.replace("dev.azure.com", "vsrm.dev.azure.com") : n.account.uri.replace(".visualstudio.com", ".vsrm.visualstudio.com") + "DefaultCollection/") + n.project.id + "/_apis/release/approvals" + t + "?api-version=4.1-preview.1" + e
@@ -40,10 +40,10 @@ define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services",
     function p(e) {
         return void 0 !== e ? "&continuationToken=" + e : ""
     }
-    t.getMyPendingApprovals = function i(r, s, l, e) {
+    exports.getMyPendingApprovals = function i(r, s, l, e) {
         VSS.getWebContext();
         var t = c("&statusFilter=pending&top=100" + p(e));
-        u.callApi(t, "GET", null, null, function(e, t) {
+        rest_call.callApi(t, "GET", null, null, function(e, t) {
             var n = l || "";
             if (0 === e.value.length) r(e);
             else {
@@ -54,7 +54,7 @@ define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services",
                         n = c("&top=100&includeMyGroupApprovals=true&statusFilter=pending&assignedToFilter=" + t.user.uniqueName + "&releaseIdsFilter=" + o + p(e));
                     s = s || {
                         value: []
-                    }, u.callApi(n, "GET", null, null, function(e, t) {
+                    }, rest_call.callApi(n, "GET", null, null, function(e, t) {
                         var n = t.getResponseHeader("X-MS-ContinuationToken") || "";
                         e.value = e.value.concat(s.value), "" !== n ? a(o, i, r, e, n) : i(e)
                     }, function(e) {
@@ -69,19 +69,19 @@ define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services",
         }, function(e) {
             s(e)
         })
-    }, t.getPendingApprovals = function a(o, i, r, e) {
+    }, exports.getPendingApprovals = function a(o, i, r, e) {
         var t = c("&statusFilter=pending&top=100" + p(e));
         r = r || {
             value: []
-        }, u.callApi(t, "GET", null, null, function(e, t) {
+        }, rest_call.callApi(t, "GET", null, null, function(e, t) {
             var n = t.getResponseHeader("X-MS-ContinuationToken") || "";
             e.value = e.value.concat(r.value), "" !== n ? a(o, i, e, n) : o(e)
         }, function(e) {
             i(e)
         })
-    }, t.approve = function(e, t, n, a) {
+    }, exports.approve = function(e, t, n, a) {
         var o = c("", e);
-        u.callApi(o, "PATCH", {
+        rest_call.callApi(o, "PATCH", {
             "Content-Type": "application/json"
         }, JSON.stringify({
             status: t ? "2" : "4"
