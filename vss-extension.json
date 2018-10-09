@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "harish-release-task-page",
-    "version": "0.0.0.1",
+    "version": "0.0.0.3",
     "name": "Harish Release Page",
     "description": "A Visual Studio Services contribution extension for Harish Release Tools.",
     "publisher": "HarishB",
@@ -22,6 +22,7 @@
             ],
             "properties": {
                 "name": "Approvals",
+                "order": 1,
                 "uri": "index.html"
             }
         }

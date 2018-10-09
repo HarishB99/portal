@@ -17,9 +17,30 @@
     <script>
         VSS.init();
         VSS.ready(function() {
-            var webcontext = VSS.getWebContext();
-            console.log(webcontext);
-            document.getElementById("name").innerHTML = webcontext.user.name;
+            window.webcontext = VSS.getWebContext();
+            console.log(window.webcontext);
+            document.getElementById("name").innerHTML = window.webcontext.user.name;
+        });
+        VSS.require(["VSS/Authentication/Services"], function(auth_service) {
+            VSS.getAppToken().then(function(token) {
+                var authHeader = auth_service.authTokenManager.getAuthorizationHeader(token);
+                var xhr = new XMLHttpRequest();
+                var url = `${(window.webcontext.host.authority.toLowerCase().indexOf("dev.azure.com") >= 0 ? window.webcontext.account.uri.replace("dev.azure.com", "vsrm.dev.azure.com") : window.webcontext.account.uri.replace(".visualstudio.com", ".vsrm.visualstudio.com"))}DefaultCollection/${window.webcontext.project.id}/_apis/release/approvals?api-version=4.1-preview.1`;
+                console.log(`URL: ${url}`);
+                xhr.open('GET', url, true);
+                xhr.setRequestHeader('Authorization', authHeader);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        console.log(`Response: ${xhr.response}`);
+                    } else {
+                        console.error(`Error: ${xhr.statusText}`);
+                    }
+                };
+                xhr.onerror = function() {
+                    console.error('Network error');
+                };
+                xhr.send();
+            });
         });
     </script>
 </head>
