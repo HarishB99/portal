@@ -14,19 +14,19 @@ define("scripts/RestCall", ["require", "exports", "VSS/Authentication/Services",
                 url: url,
                 method: method,
                 data: data || "",
-                success: function(e, t, n) {
-                    success_callback(e, n)
+                success: function(data, status, xhr) {
+                    success_callback(data, xhr)
                 },
-                error: function(e, t, n) {
-                    void 0 !== e.responseJSON || !e.status || 401 !== e.status && 403 !== e.status ? void 0 !== e.responseJSON ? failure_callback(e.responseJSON, n, e.status) : failure_callback({
-                        message: "call failed with status code " + e.status
-                    }, n, e.status) : failure_callback({
+                error: function(xhr, status, errorThrown) {
+                    void 0 !== xhr.responseJSON || !xhr.status || 401 !== xhr.status && 403 !== xhr.status ? void 0 !== xhr.responseJSON ? failure_callback(xhr.responseJSON, errorThrown, xhr.status) : failure_callback({
+                        message: "call failed with status code " + xhr.status
+                    }, errorThrown, xhr.status) : failure_callback({
                         message: "unauthorized call"
-                    }, n)
+                    }, errorThrown)
                 },
-                beforeSend: function(e) {
-                    if (e.setRequestHeader("Authorization", authHeader), headers)
-                        for (var t in headers) e.setRequestHeader(t, headers[t])
+                beforeSend: function(xhr) {
+                    if (xhr.setRequestHeader("Authorization", authHeader), headers)
+                        for (var t in headers) xhr.setRequestHeader(t, headers[t])
                 }
             })
         })
