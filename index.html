@@ -4,54 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/css.css">
+    <link rel="stylesheet" href="styles/mdl/material.min.css">
+    <script src="styles/mdl/material.min.js"></script>
     <script src="node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto" rel="stylesheet">
-    <style>
-        body {
-            background-color: rgba(0, 0, 0, 0.1);
-            padding: 5%;
-            margin: 0px;
-            font-family: 'Roboto', 'Montserrat', sans-serif;
-        }
-    </style>
     <script>
         VSS.init();
-        VSS.ready(function() {
-            window.webcontext = VSS.getWebContext();
-            console.log(window.webcontext);
-            document.getElementById("name").innerHTML = window.webcontext.user.name;
-        });
+        
         VSS.require(["VSS/Service", "ReleaseManagement/Core/RestClient"], function(vss_service, rest_client) {
-            var web_client = vss_service.getCollectionClient(rest_client.ReleaseHttpClient);
-            web_client.getApprovals(window.webcontext.project.id).then(function(approvals) {
-                console.log(approvals);
+            const web_context = VSS.getWebContext();
+            const web_client = vss_service.getCollectionClient(rest_client.ReleaseHttpClient);
+            web_client.getApprovals(web_context.project.id).then(function(approvals) {
+                const releases = [];
+                const approval_container = document.getElementById("approvals");
+                if (approvals.length < 1) {
+                    document.getElementById('loading').style.display = 'none';
+                    const tr = document.createElement('tr');
+                    tr.style.borderTop = '1px solid grey';
+                        const td = document.createElement('td');
+                        td.innerHTML = 'You have caught up with all your approvals.';
+                        td.setAttribute('colspan', '2');
+                        td.className = 'mdl-data-table__cell--non-numeric';
+                        td.style.cursor = "pointer";
+                    tr.appendChild(td);
+                    approval_container.appendChild(tr);
+                } else {
+                    document.getElementById('loading').style.display = 'none';
+                    console.log(approvals);
+                    for (let i = 0; i < approvals.length; i++) {
+                        const approval = approvals[i];
+                        const tr = document.createElement('tr');
+                        tr.style.borderTop = '1px solid grey';
+                        tr.className = "approval_infos";
+                            const td = document.createElement('td');
+                            td.innerHTML = approval.approver.displayName;
+                            td.className = 'mdl-data-table__cell--non-numeric';
+                            td.style.cursor = "pointer";
+                            tr.appendChild(td);
+                        approval_container.appendChild(tr);
+                        releases.push(web_client.getRelease(web_context.project.id, approval.release.id));
+                    }
+                }
+                return Promise.all(releases);
+            }).then(function(releases) {
+                console.log(releases);
+                if (releases.length >= 1) {
+                    const approval_infos = document.getElementsByClassName('approval_infos');
+                    for (let i = 0; i < releases.length; i++) {
+                        let artifacts = '';
+                        const release = releases[i];
+                        for (let i = 0; i < release.artifacts.length; i++) {
+                            const artifact = release.artifacts[i];
+                            artifacts += "<a target='_blank' href='" + artifact.definitionReference.artifactSourceVersionUrl.id + "'>" + artifact.alias + "</a>";
+                            if (i !== release.artifacts.length - 1) {
+                                artifacts += ", ";
+                            }
+                        }
+                        const td = document.createElement('td');
+                            td.innerHTML = artifacts;
+                            td.className = 'mdl-data-table__cell--non-numeric';
+                            td.style.cursor = "pointer";
+                        approval_infos[i].insertBefore(td, approval_infos[i].firstElementChild);
+                    }
+                }
             });
-            // var authTokenManager = new auth_service.BearerAuthTokenManager();
-            // authTokenManager.getAuthToken(true)
-            // VSS.getAccessToken().then(function(token) {
-            //     var authHeader = auth_service.authTokenManager.getAuthorizationHeader(token);
-            //     var xhr = new XMLHttpRequest();
-            //     var url = `https://vsrm.dev.azure.com/${window.webcontext.account.name}/${window.webcontext.project.id}/_apis/release/releases?api-version=4.1-preview.6`;
-            //     console.log(`URL: ${url}`);
-            //     xhr.open('GET', url, true);
-            //     xhr.setRequestHeader('Authorization', authHeader);
-            //     xhr.setRequestHeader('Content-Type', 'application/json');
-            //     xhr.onload = function() {
-            //         if (xhr.status === 200) {
-            //             console.log(`Response: ${xhr.response}`);
-            //         } else {
-            //             console.error(`Error: ${xhr.statusText}`);
-            //         }
-            //     };
-            //     xhr.onerror = function() {
-            //         console.error('Network error');
-            //     };
-            //     xhr.send();
-            // });
         });
     </script>
 </head>
-<body>
-    <h1>Hello, <span id="name"></span></h1>
+<body style="background-color: rgba(0, 0, 0, 0.1); padding: 5%; margin: 0px; font-family: 'Roboto', 'Montserrat';"><!-- style="font-size: 1.2em;"  -->
+    <table style="width: 90%;" class="mdl-data-table mdl-js-data-table" cellpadding="5">
+        <thead style="border-top: 1px solid grey; border-bottom: 1px solid grey;">
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Artifacts</th>
+                <th class="mdl-data-table__cell--non-numeric">To be approved by</th>
+            </tr>
+        </thead>
+        <tbody id="approvals">
+            <tr id="loading">
+                <td class="mdl-data-table__cell--non-numeric" colspan="2" style="border-top: 1px solid grey;">Loading...</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "harish-release-task-page",
-    "version": "0.0.0.37",
+    "version": "0.0.0.65",
     "name": "Harish Release Page",
     "description": "A Visual Studio Services contribution extension for Harish Release Tools.",
     "publisher": "HarishB",
@@ -38,6 +38,22 @@
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",
+            "addressable": true
+        },
+        {
+            "path": "styles/fonts",
+            "addressable": true
+        },
+        {
+            "path": "styles/css.css",
+            "addressable": true
+        },
+        {
+            "path": "styles/mdl/material.min.css",
+            "addressable": true
+        },
+        {
+            "path": "styles/mdl/material.min.js",
             "addressable": true
         }
     ]
