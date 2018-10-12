@@ -55,7 +55,7 @@
                         const release = releases[i];
                         for (let i = 0; i < release.artifacts.length; i++) {
                             const artifact = release.artifacts[i];
-                            artifacts += "<a target='_blank' href='" + artifact.definitionReference.artifactSourceVersionUrl.id + "'>" + artifact.alias + "</a>";
+                            artifacts += "<a>" + artifact.alias + "</a>"; //  target='_blank' href='" + artifact.definitionReference.artifactSourceVersionUrl.id + "'
                             if (i !== release.artifacts.length - 1) {
                                 artifacts += ", ";
                             }
@@ -64,6 +64,13 @@
                             td.innerHTML = artifacts;
                             td.className = 'mdl-data-table__cell--non-numeric';
                             td.style.cursor = "pointer";
+                            td.onclick = function() {
+                                VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                                    dataService.setValue("release", release, {scopeType: "User"}).then(function() {
+                                        location.href = 'contents/approvals.html';
+                                    });
+                                });
+                            };
                         approval_infos[i].insertBefore(td, approval_infos[i].firstElementChild);
                     }
                 }

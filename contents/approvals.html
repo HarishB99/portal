@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../styles/css.css">
+    <link rel="stylesheet" href="../styles/mdl/material.min.css">
+    <script src="../styles/mdl/material.min.js"></script>
+    <script src="../node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
+    <script>
+        VSS.init();
+        
+        VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+            dataService.getValue("release", {scopeType: "User"}).then(function(release) {
+                console.log("Release: ", release);
+                document.getElementsByTagName('body')[0].innerHTML = JSON.stringify(release);
+            });
+        });
+    </script>
+</head>
+<body style="background-color: rgba(0, 0, 0, 0.1); padding: 5%; margin: 0px; font-family: 'Roboto', 'Montserrat';"><!-- style="font-size: 1.2em;"  -->
+    <!-- <table style="width: 90%;" class="mdl-data-table mdl-js-data-table" cellpadding="5">
+        <thead style="border-top: 1px solid grey; border-bottom: 1px solid grey;">
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Artifacts</th>
+                <th class="mdl-data-table__cell--non-numeric">To be approved by</th>
+            </tr>
+        </thead>
+        <tbody id="approvals">
+            <tr id="loading">
+                <td class="mdl-data-table__cell--non-numeric" colspan="2" style="border-top: 1px solid grey;">Loading...</td>
+            </tr>
+        </tbody>
+    </table> -->
+</body>
+</html>
